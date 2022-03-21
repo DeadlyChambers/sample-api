@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-service
+  labels:
+    app: sample-api
+    msservice: data
+spec:
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  selector:
+    app: sample-api
+    msservice: data
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-deployment
+  labels:
+    app: sample-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sample-api
+  template:
+    metadata:
+      labels:
+        app: sample-api
+    spec:
+      containers:
+        - name: data-container
+          image: deadlychambers/soinshane-k8s-data
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              memory: 256Mi
+              cpu: "0.2"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"

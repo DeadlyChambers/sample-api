@@ -28,8 +28,8 @@ namespace system.Controllers
         public SystemModel Get()
         {
             _logger.LogDebug("Entering Get");
-                      
-              
+
+//Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion
             return new SystemModel
             {
                 Name = "Testing API",

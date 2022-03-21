@@ -22,7 +22,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+   loggerFactory.AddLog4Net();
 app.UseAuthorization();
 
 app.MapControllers();

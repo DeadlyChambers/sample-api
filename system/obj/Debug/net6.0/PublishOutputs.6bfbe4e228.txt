@@ -1,0 +1,13 @@
+/home/shane/source/repos/dotnet/sample-api/system/bin/Debug/net6.0/publish/system
+/home/shane/source/repos/dotnet/sample-api/system/bin/Debug/net6.0/publish/appsettings.Development.json
+/home/shane/source/repos/dotnet/sample-api/system/bin/Debug/net6.0/publish/appsettings.json
+/home/shane/source/repos/dotnet/sample-api/system/bin/Debug/net6.0/publish/system.dll
+/home/shane/source/repos/dotnet/sample-api/system/bin/Debug/net6.0/publish/system.deps.json
+/home/shane/source/repos/dotnet/sample-api/system/bin/Debug/net6.0/publish/system.runtimeconfig.json
+/home/shane/source/repos/dotnet/sample-api/system/bin/Debug/net6.0/publish/system.pdb
+/home/shane/source/repos/dotnet/sample-api/system/bin/Debug/net6.0/publish/Microsoft.OpenApi.dll
+/home/shane/source/repos/dotnet/sample-api/system/bin/Debug/net6.0/publish/Swashbuckle.AspNetCore.Swagger.dll
+/home/shane/source/repos/dotnet/sample-api/system/bin/Debug/net6.0/publish/Swashbuckle.AspNetCore.SwaggerGen.dll
+/home/shane/source/repos/dotnet/sample-api/system/bin/Debug/net6.0/publish/Swashbuckle.AspNetCore.SwaggerUI.dll
+/home/shane/source/repos/dotnet/sample-api/system/bin/Debug/net6.0/publish/common.dll
+/home/shane/source/repos/dotnet/sample-api/system/bin/Debug/net6.0/publish/common.pdb

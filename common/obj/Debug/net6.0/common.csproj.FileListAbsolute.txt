@@ -1,0 +1,12 @@
+/home/shane/source/repos/dotnet/sample-api/common/bin/Debug/net6.0/common.deps.json
+/home/shane/source/repos/dotnet/sample-api/common/bin/Debug/net6.0/common.dll
+/home/shane/source/repos/dotnet/sample-api/common/bin/Debug/net6.0/ref/common.dll
+/home/shane/source/repos/dotnet/sample-api/common/bin/Debug/net6.0/common.pdb
+/home/shane/source/repos/dotnet/sample-api/common/obj/Debug/net6.0/common.csproj.AssemblyReference.cache
+/home/shane/source/repos/dotnet/sample-api/common/obj/Debug/net6.0/common.GeneratedMSBuildEditorConfig.editorconfig
+/home/shane/source/repos/dotnet/sample-api/common/obj/Debug/net6.0/common.AssemblyInfoInputs.cache
+/home/shane/source/repos/dotnet/sample-api/common/obj/Debug/net6.0/common.AssemblyInfo.cs
+/home/shane/source/repos/dotnet/sample-api/common/obj/Debug/net6.0/common.csproj.CoreCompileInputs.cache
+/home/shane/source/repos/dotnet/sample-api/common/obj/Debug/net6.0/common.dll
+/home/shane/source/repos/dotnet/sample-api/common/obj/Debug/net6.0/ref/common.dll
+/home/shane/source/repos/dotnet/sample-api/common/obj/Debug/net6.0/common.pdb

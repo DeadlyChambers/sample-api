@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "dgSpecHash": "+MFVS0F6mwkxu+m5hQZ7quSKTCKq+FXuNPL5GUq6xmk10XGNIRPrSSXQthbGrAMAHQlhOuJftw4JT8Y319rU2A==",
+  "success": true,
+  "projectFilePath": "/home/shane/source/repos/dotnet/sample-api/data/data.csproj",
+  "expectedPackageFiles": [
+    "/home/shane/.nuget/packages/microsoft.extensions.apidescription.server/3.0.0/microsoft.extensions.apidescription.server.3.0.0.nupkg.sha512",
+    "/home/shane/.nuget/packages/microsoft.openapi/1.2.3/microsoft.openapi.1.2.3.nupkg.sha512",
+    "/home/shane/.nuget/packages/swashbuckle.aspnetcore/6.3.0/swashbuckle.aspnetcore.6.3.0.nupkg.sha512",
+    "/home/shane/.nuget/packages/swashbuckle.aspnetcore.swagger/6.3.0/swashbuckle.aspnetcore.swagger.6.3.0.nupkg.sha512",
+    "/home/shane/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.3.0/swashbuckle.aspnetcore.swaggergen.6.3.0.nupkg.sha512",
+    "/home/shane/.nuget/packages/swashbuckle.aspnetcore.swaggerui/6.3.0/swashbuckle.aspnetcore.swaggerui.6.3.0.nupkg.sha512",
+    "/home/shane/.nuget/packages/microsoft.netcore.app.runtime.linux-x64/6.0.3/microsoft.netcore.app.runtime.linux-x64.6.0.3.nupkg.sha512",
+    "/home/shane/.nuget/packages/microsoft.aspnetcore.app.runtime.linux-x64/6.0.3/microsoft.aspnetcore.app.runtime.linux-x64.6.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
