@@ -1,9 +1,27 @@
 # K8S Sample App
 Ensure you are in the root folder. Then you can update the version number, then run _app_proj for both data and system
+
+## Quick Start
+You should be able to copy paste, just double check docker hub that you have a higher version of the docker image
 ```
-# Use the script
-./run-docker.sh "6.0.1.9" "system"
-# OR manual way #
+## Data Api
+./run-docker.sh 6.0.1.<x> data
+# k is assuming you have the alias setup
+k apply -f data.kube.yaml
+export data_port=$(kubectl get services/data-api -o go-template='{{(index .spec.ports 0).nodePort}}')
+curl "http://$(minikube ip):${data_port}/System"
+
+## System Api
+./run-docker.sh 6.0.1.<x> system
+k apply -f system.kube.yaml
+export system_port=$(kubectl get services/system-api -o go-template='{{(index .spec.ports 0).nodePort}}')
+curl "http://$(minikube ip):${system_port}/System"
+
+```
+
+## Manual Way
+Below are a lot of the commands you need to create images, run kube state configs, and validate the state of your nodes, services, deployments, pods, minikube, and other kubernate objects
+```
 
 # Update vars for both images
 _app_ver=6.0.1.8

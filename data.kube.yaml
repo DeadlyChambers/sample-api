@@ -1,46 +1,70 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: data-api
-  labels:
-    app: sample-api
-    msservice: data
-spec:
-  type: LoadBalancer
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
-  selector:
-    app: sample-api
-    msservice: data
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: data-api
   labels:
-    app: sample-api
+    app: sample-app
+    msservice: data-api
 spec:
-  replicas: 2
+  replicas: 1
+  revisionHistoryLimit: 10
+  minReadySeconds: 5
   selector:
     matchLabels:
-      app: sample-api
+      msservice: data-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
   template:
     metadata:
       labels:
-        app: sample-api
+        msservice: data-api
+        app: sample-app
+        tier: service
     spec:
       containers:
         - name: data-api
-          image: deadlychambers/soinshane-k8s-data:latest
-          ports:
-            - containerPort: 8080
-              protocol: TCP
+          image: "deadlychambers/soinshane-k8s-data"
+          imagePullPolicy: Always
           resources:
-            limits:
-              memory: 256Mi
-              cpu: "0.2"
             requests:
-              memory: 256Mi
-              cpu: "0.2"
+              memory: "64Mi"
+              cpu: "125m"
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /System
+              port: 80
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /System
+              port: 80
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+          # env:
+          #   - name: PORT
+          #     value: "8080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-api
+  labels:
+    msservice: data-api
+    app: sample-app
+    tier: service
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 80
+  selector:
+    msservice: data-api

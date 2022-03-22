@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: system-api
-          image: "deadlychambers/soinshane-k8s-system:latest"
+          image: "deadlychambers/soinshane-k8s-system"
           imagePullPolicy: Always
           resources:
             requests:
@@ -68,7 +68,6 @@ spec:
       targetPort: 80
   selector:
     msservice: system-api
----
 # apiVersion: networking.k8s.io/v1
 # kind: Ingress
 # metadata:
