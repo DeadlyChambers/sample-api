@@ -1,4 +1,3 @@
-using System;
 using System.Reflection;
 using System.Text;
 using common;
@@ -18,20 +17,18 @@ public class SystemController : ControllerBase
     }
 
     /// <summary>
-        /// Basic System Call
-        /// </summary>
-        /// <returns></returns>
-        
-        public SystemModel Get()
+    /// Basic System Call
+    /// </summary>
+    /// <returns></returns>
+
+    public SystemModel Get()
+    {
+        var s = new StringBuilder("EnterGet");
+        return new SystemModel
         {
-            _logger.LogDebug("Entering Get");
-                      
-              
-            return new SystemModel
-            {
-                Name = "Data API",
-                Version = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>().Version 
-      
-            };
-        }
+            Name = Assembly.GetEntryAssembly().FullName,
+            Version = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>().Version
+
+        };
+    }
 }

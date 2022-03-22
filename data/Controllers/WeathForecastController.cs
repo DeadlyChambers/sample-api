@@ -19,6 +19,10 @@ public class WeatherForecastController : ControllerBase
     }
 
     
+    /// <summary>
+    /// Return random dataset for weatherforecast
+    /// </summary>
+    /// <returns></returns>
     public IEnumerable<WeatherForecast> Get()
     {
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast

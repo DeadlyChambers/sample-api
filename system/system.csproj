@@ -21,6 +21,7 @@
     	<PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="6.1.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0"/>
 		<PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
 		<ProjectReference Include="..\common\common.csproj" />
   </ItemGroup>

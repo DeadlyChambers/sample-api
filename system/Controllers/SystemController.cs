@@ -1,10 +1,8 @@
-using System.Net.Http;
-using System.Net;
-using System;
+
 using Microsoft.AspNetCore.Mvc;
 using common;
-using System.Text;
 using System.Reflection;
+using System.Text;
 
 namespace system.Controllers
 {
@@ -17,6 +15,7 @@ namespace system.Controllers
 
         public SystemController(ILogger<SystemController> logger)
         {
+
             _logger = logger;
         }
 
@@ -24,17 +23,16 @@ namespace system.Controllers
         /// Basic System Call
         /// </summary>
         /// <returns></returns>
-        
+
         public SystemModel Get()
         {
-            _logger.LogDebug("Entering Get");
-
-//Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion
+            var s = new StringBuilder("EnterGet");
+            Logger.Debug(s);
             return new SystemModel
             {
-                Name = "Testing API",
-                Version = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>().Version 
-      
+                Name = Assembly.GetEntryAssembly().FullName,
+                Version = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>().Version
+
             };
         }
     }

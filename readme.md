@@ -1,12 +1,16 @@
 # K8S Sample App
 Ensure you are in the root folder. Then you can update the version number, then run _app_proj for both data and system
 ```
+# Use the script
+./run-docker.sh "6.0.1.9" "system"
+# OR manual way #
+
 # Update vars for both images
-_app_ver=6.0.1.2
-_app_proj=data# or system
+_app_ver=6.0.1.8
+_app_proj=system# or system
 
 # Build the new images
-docker build -t "deadlychambers/soinshane-k8s-$_app_proj:$_app_ver" -t "deadlychambers/soinshane-k8s-$_app_proj:latest" --build-arg APP_VER=$_app_ver -f "$_app_proj.Dockerfile" . --target restore
+docker build -t "deadlychambers/soinshane-k8s-$_app_proj:$_app_ver" -t "deadlychambers/soinshane-k8s-$_app_proj:latest" --build-arg APP_VER=$_app_ver -f "$_app_proj.Dockerfile" . 
 
 # push the images
 docker push "deadlychambers/soinshane-k8s-$_app_proj" -a
@@ -26,7 +30,8 @@ docker ps -a
 #now you can execute command on the container
 docker exec -it api-service bash
 ```
-
+## Warning
+The Loadbalancer doesn't fully work on minikube, you have to set some stuff up to get it working. You might run into issues not getting out of pending state, so you [Might need a hack and a fix](https://minikube.sigs.k8s.io/docs/handbook/accessing/#loadbalancer-access)
 ## Apply to Kubernetes
 You need to create the Service and deployment using the yaml files in the directory. Also you might need to ensure the  `minikube start` has happened.
 
@@ -35,6 +40,9 @@ kubectl apply -f ./data.kube.yaml -f ./system.kube.yaml
 
 kubectl get services
 kubectl get deployments
+
+kubectl delete service -l msservice="system"
+kubectl delete deployment -l msservice="system"
 ```
 
 ## Validate Service
