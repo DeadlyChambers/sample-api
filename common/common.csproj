@@ -3,6 +3,10 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <Configurations>Debug;Release;</Configurations>
+        <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+        <ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.3.0"/>

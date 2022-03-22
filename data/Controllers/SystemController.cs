@@ -1,3 +1,4 @@
+using System.Reflection;
 using common;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +21,6 @@ public class SystemController : ControllerBase
     /// <returns></returns>
     public SecureSystemObj Get()
     {
-        return new SecureSystemObj();
+        return new SecureSystemObj(Assembly.GetExecutingAssembly());
     }
 }

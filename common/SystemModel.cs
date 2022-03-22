@@ -1,23 +1,7 @@
 ﻿using System.Reflection;
 namespace common;
 
-/// <summary>
-/// Clean way of outputting the Assembly Attributes
-/// </summary>
-internal static class AssemblyInfo
-{
-    public static string Product { get { return GetExecutingAssemblyAttribute<AssemblyProductAttribute>(a => a.Product); } }
-    public static string Company { get { return GetExecutingAssemblyAttribute<AssemblyCompanyAttribute>(a => a.Company); } }
-    public static string Description { get { return GetExecutingAssemblyAttribute<AssemblyDescriptionAttribute>(a => a.Description); } }
-    public static string Configuration { get { return GetExecutingAssemblyAttribute<AssemblyConfigurationAttribute>(a => a.Configuration); } }
-    public static string Version { get { return GetExecutingAssemblyAttribute<AssemblyInformationalVersionAttribute>(a => a.InformationalVersion); } }
 
-    private static string GetExecutingAssemblyAttribute<T>(Func<T, string> value) where T : Attribute
-    {
-        T attribute = (T)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(T));
-        return value.Invoke(attribute);
-    }
-}
 
 /// <summary>
 /// Secure System Object will output a bunch of assembly info in order to identify
@@ -28,7 +12,7 @@ public class SecureSystemObj : SystemObj
     /// <summary>
     /// Create a system object
     /// </summary>
-    public SecureSystemObj()
+    public SecureSystemObj(Assembly currentAssembly):base(currentAssembly)
     {
         try
         {
@@ -46,8 +30,6 @@ public class SecureSystemObj : SystemObj
             {
                 Address += $"{ip} || ";
             }
-            //Allowing Everything to be seen
-            Version = AssemblyInfo.Version;
         }
         catch (Exception e)
         {
@@ -63,19 +45,26 @@ public class SecureSystemObj : SystemObj
 /// </summary>
 public class SystemObj
 {
-    public SystemObj()
+    private readonly Assembly _currentAssembly;
+    public SystemObj(Assembly currentAssembly)
     {
+        _currentAssembly=currentAssembly;
         //Not outputting the web server type
-        Version = AssemblyInfo.Version.Split('-')[0];
+        Version = _version.Split('-')[0];
     }
 
-    public static string Product { get { return AssemblyInfo.Product; } }
+    public string Product { get { return _product; } }
     //public string Copyright { get { return AssemblyInfo.Copyright; } }
-    public static string Company { get { return AssemblyInfo.Company; } }
-    public static string Configuration { get { return AssemblyInfo.Configuration; } }
-    public static string Description { get { return AssemblyInfo.Description; } }
+    public  string Company { get { return _company; } }
+    public  string Configuration { get { return _configuration; } }
+    public  string Description { get { return _description; } }
     public string Version { get; set; }
-    public static string  Date { get; } = DateTime.Now.ToString("G");
+    public  string  Date { get; } = DateTime.Now.ToString("G");
 
 
+    private string _product { get { return _currentAssembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product ?? ""; } }
+    private string _company { get { return _currentAssembly.GetCustomAttribute<AssemblyCompanyAttribute>()?.Company ?? ""; } }
+    private string _description { get { return _currentAssembly.GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description ?? ""; } }
+    private string _configuration { get { return _currentAssembly.GetCustomAttribute<AssemblyConfigurationAttribute>()?.Configuration ?? ""; } }
+    private string _version { get { return _currentAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? ""; } }
 }

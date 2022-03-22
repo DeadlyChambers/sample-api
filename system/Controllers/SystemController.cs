@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using common;
 using System.Text;
+using System.Reflection;
 
 namespace system.Controllers
 {
@@ -27,7 +28,7 @@ namespace system.Controllers
         {
             var s = new StringBuilder("EnterGet");
             Logger.Debug(s);
-            return new SecureSystemObj();
+            return new SecureSystemObj(Assembly.GetExecutingAssembly());
         }
     }
 }
