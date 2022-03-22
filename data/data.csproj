@@ -1,18 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
- 	<TargetFramework>net6.0</TargetFramework>
-		<UserSecretsId>4f1bd762-4cb5-47e2-8b37-4d7b5a281d25</UserSecretsId>
-		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <TargetFramework>net6.0</TargetFramework>
+    <UserSecretsId>4f1bd762-4cb5-47e2-8b37-4d7b5a281d25</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <Configurations>Debug;Release;</Configurations>
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
     <ImplicitUsings>enable</ImplicitUsings>
     <Version>6.0.1</Version>
-      <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionPrefix).$(VersionSuffix)</Version>
+    <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionPrefix).$(VersionSuffix)</Version>
+    <AssemblyName>Sample-Api</AssemblyName>
+    <Company>Shane Chambers Creations LLC</Company>
+    <Authors>Shane Chambers</Authors>
+    <RepositoryUrl>https://github.com/DeadlyChambers/sample-api.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Description>Simple Application to use Kubernetes, Data will output data other system</Description>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\common\common.csproj" />
   </ItemGroup>
-
 </Project>
