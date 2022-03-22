@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: data-api
-          image: "deadlychambers/soinshane-k8s-data:6.0.1.9"
+          image: "deadlychambers/soinshane-k8s-data:6.0.1.10"
           imagePullPolicy: Always
           resources:
             requests:
