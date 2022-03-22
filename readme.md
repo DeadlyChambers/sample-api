@@ -4,6 +4,9 @@ Ensure you are in the root folder. Then you can update the version number, then 
 ## Quick Start
 You should be able to copy paste, just double check docker hub that you have a higher version of the docker image
 ```
+## Find versions you would use
+./docker-check.sh
+
 ## Data Api
 ./run-docker.sh 6.0.1.<x> data
 # k is assuming you have the alias setup
