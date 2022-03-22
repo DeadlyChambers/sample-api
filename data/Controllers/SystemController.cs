@@ -1,5 +1,3 @@
-using System.Reflection;
-using System.Text;
 using common;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,15 +18,8 @@ public class SystemController : ControllerBase
     /// Basic System Call
     /// </summary>
     /// <returns></returns>
-
-    public SystemModel Get()
+    public SecureSystemObj Get()
     {
-        var s = new StringBuilder("EnterGet");
-        return new SystemModel
-        {
-            Name = Assembly.GetEntryAssembly().FullName,
-            Version = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>().Version
-
-        };
+        return new SecureSystemObj();
     }
 }

@@ -2,3 +2,8 @@ bin/
 obj/
 .vscode/
 .git/
+*.sh
+*.sln
+*.yaml
+*.md
+*.Dockerfile

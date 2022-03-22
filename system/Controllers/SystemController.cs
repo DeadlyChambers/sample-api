@@ -1,7 +1,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using common;
-using System.Reflection;
 using System.Text;
 
 namespace system.Controllers
@@ -24,16 +23,11 @@ namespace system.Controllers
         /// </summary>
         /// <returns></returns>
 
-        public SystemModel Get()
+        public SecureSystemObj Get()
         {
             var s = new StringBuilder("EnterGet");
             Logger.Debug(s);
-            return new SystemModel
-            {
-                Name = Assembly.GetEntryAssembly().FullName,
-                Version = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>().Version
-
-            };
+            return new SecureSystemObj();
         }
     }
 }
