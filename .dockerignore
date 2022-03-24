@@ -13,3 +13,5 @@ scripts
 infra
 *.tf
 *.tfvars
+.terraform*
+*.hcl
