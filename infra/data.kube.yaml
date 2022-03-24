@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-api
+  labels:
+    app: sample-app
+    msservice: data-api
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  minReadySeconds: 5
+  selector:
+    matchLabels:
+      msservice: data-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
+  template:
+    metadata:
+      labels:
+        msservice: data-api
+        app: sample-app
+        tier: service
+    spec:
+      containers:
+        - name: data-api
+          image: "deadlychambers/soinshane-k8s-data:6.0.1.10"
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "125m"
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /System
+              port: 80
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /System
+              port: 80
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+          # env:
+          #   - name: PORT
+          #     value: "8080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-api
+  labels:
+    msservice: data-api
+    app: sample-app
+    tier: service
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 80
+  selector:
+    msservice: data-api

@@ -7,3 +7,9 @@ obj/
 *.yaml
 *.md
 *.Dockerfile
+helm
+k8s
+scripts
+infra
+*.tf
+*.tfvars
