@@ -1,3 +1,5 @@
+# Build the docker images and push to the repository
+
 _app_ver=$1
 _app_proj=$2
 if [ -z "$_app_ver" ]

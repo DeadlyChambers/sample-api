@@ -1,3 +1,6 @@
+
+##About to strip working code into modules. Want to get a quick 
+##commit in just in case I melt this design
 terraform {
   required_providers {
     kubernetes = {
@@ -151,7 +154,7 @@ resource "kubernetes_service" "develop" {
     }
     type = "NodePort"
     port {
-      node_port   = 31122
+      #node_port   = 31122
       port        = 8080
       target_port = 80
     }

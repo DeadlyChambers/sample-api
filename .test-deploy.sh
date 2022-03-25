@@ -1,3 +1,4 @@
+# Using Minikube navigate the namespace and resource tree to hit the deployed api
 _environ="develop"
 echo -e "Running Api System Call"
 
