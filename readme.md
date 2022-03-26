@@ -7,22 +7,49 @@ Terraform consider best practice keeping your modules at max 1 layer deep, and u
 expressions for nesting, and modules together on a single module. They warn that if you nest modules several layers deep. It becomes difficult to make isolated changes to the the infrastructure layout. 
 
 ## Quick Start
-You should be able to copy paste, just double check docker hub that you have a higher version of the docker image
+The first section here is creating new images in docker hub. If you just want to fire up
+the cluster, skip this block.
 ```
 ## Find versions you would use
 ./docker-check.sh
 
-## Data Api
+## Data Api where you replace <x> with the next revision number
 ./run-docker.sh 6.0.1.<x> data
-# k is assuming you have the alias setup
-k apply -f data.kube.yaml
-export data_port=$(kubectl get services/data-api -o go-template='{{(index .spec.ports 0).nodePort}}')
-curl "http://$(minikube ip):${data_port}/System"
 
-## System Api
+## System Api where you replace <x> with the next revision number
 ./run-docker.sh 6.0.1.<x> system
-k apply -f system.kube.yaml
-export system_port=$(kubectl get services/system-api -o go-template='{{(index .spec.ports 0).nodePort}}')
-curl "http://$(minikube ip):${system_port}/System"
 
+```
+
+Now you will need to ensure the terraform config for the module is set to the image
+version you wish to see deployed. 
+```
+nano develop/services/main.tf
+# edit the version number for both services, 
+# and double check the ip matches $(minikube ip)
+# save the file and exit nano
+```
+
+Now the Terraform config is ready, you will need to fire up minikube and deploy
+```
+minikube start
+
+# Deploy
+cd develop/services
+terraform init
+terraform plan
+terraform apply
+# you will need to type yes
+
+# Test the deployment
+cd ../..
+./.test-deploy.sh
+```
+
+You should see the output of the version from the module. Now you are safe to
+destroy everything from minikube and terraform
+```
+cd develop/services
+terraform destroy
+minikube delete
 ```

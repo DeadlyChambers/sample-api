@@ -51,3 +51,9 @@ docker ps -a
 #now you can execute command on the container
 docker exec -it api-service bash
 ```
+
+### Cleanup
+A little awk and xargs magic to cleanup all of the images that are from the deadlychambers repo on my local
+```
+docker image ls | grep deadlychambers | awk '$1=="deadly*";{print $3}' | xargs docker rmi --force
+```
