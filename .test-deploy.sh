@@ -1,5 +1,10 @@
 # Using Minikube navigate the namespace and resource tree to hit the deployed api
-_environ="develop"
+
+_environ=$1
+if [ -z "$_environ" ]
+    then
+        read -p "Enter the environment you are looking to test, develop or stage:\n" _environ
+fi
 echo -e "Running Api System Call"
 
 export system_port=$(kubectl get services/system-api --namespace ${_environ} -o go-template='{{(index .spec.ports 0).nodePort}}')

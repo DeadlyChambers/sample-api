@@ -10,6 +10,9 @@ expressions for nesting, and modules together on a single module. They warn that
 The first section here is creating new images in docker hub. If you just want to fire up
 the cluster, skip this block.
 ```
+## Get into api directory
+cd api
+
 ## Find versions you would use
 ./docker-check.sh
 
@@ -24,6 +27,9 @@ the cluster, skip this block.
 Now you will need to ensure the terraform config for the module is set to the image
 version you wish to see deployed. 
 ```
+## Get into the terraform directory for services
+cd develop/services #could also be cd stage/services
+
 nano develop/services/main.tf
 # edit the version number for both services, 
 # and double check the ip matches $(minikube ip)
