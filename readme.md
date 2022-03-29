@@ -1,6 +1,6 @@
 # K8S Sample App
 There are 2 simple apis under the api folder `system` and `data` services. They are built
-on .net 6.0. In the same directory are docker files, and 
+on .net 6.0. In the same directory are docker files, and other stuff
 
 ## Modular Composition
 Terraform consider best practice keeping your modules at max 1 layer deep, and utiize
