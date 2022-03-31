@@ -25,10 +25,21 @@ output "config_map_aws_auth" {
 
 output "region" {
   description = "AWS region"
-  value       = var.region
+  value       = local.region
 }
+
 
 output "cluster_name" {
   description = "Kubernetes Cluster Name"
   value       = local.cluster_name
+}
+
+output "cluster_context" {
+  description = "Kubernetes Cluster Context"
+  value       = local.contextname
+}
+
+output "cluster_user" {
+  description = "Kubernetes Cluster User"
+  value       = local.contextuser
 }

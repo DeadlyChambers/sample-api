@@ -6,3 +6,4 @@ obj/
 .terraform
 .terraform/
 *.tfstate
+.creds.sh

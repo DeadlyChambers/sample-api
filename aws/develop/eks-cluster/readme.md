@@ -1,17 +1,20 @@
 # Create EKS Cluster
-Using [Terraform Example](https://learn.hashicorp.com/tutorials/terraform/eks?in=terraform/kubernetes)
+Using [OLD ~~Terraform Example~~](https://learn.hashicorp.com/tutorials/terraform/eks?in=terraform/kubernetes) a ,uch more recent example is here
+[New](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/v18.17.0/examples/eks_managed_node_group)
 
 ## File Breakdown
+
+### **Main**
 **vpc.tf** Creating the VPC, and starts with cluster name, and loadbalancer naming with random values as the suffix. Here is where you will want to specify Region and/or cidr range for the VPC and subnets. Results will create a 3 public and 3 private subnets with a nat gateway setup
 
 **security-groups.tf** Is setting up the ssh ingress to from local to public subnets, and public subnets to private subnets on the vpc.
 
+**kubernetes.tf** Is the final piece to create the ssl and expose the vpc. Meaning once
+this guy is in place. The eks cluster should be ready to be deployed to. 
+
 **versions.tf** Sets the terraform provider versions used
 
 **eks.tf** Will be creating the ec2 worker nodes that will be part of the eks cluster
-
-**kubernetes.tf** Is the final piece to create the ssl and expose the vpc. Meaning once
-this guy is in place. The eks cluster should be ready to be deployed to. 
 
 **outputs.tf** Upon completion of the terraform apply, the output that will be given will
 be the major pieces required for deploying to minikube. To pick up the ec2 deployments, we just need to configure kubectl with the values output. Kube.config, host, and cert provided by terraform. Will enable configuration for eks cli
