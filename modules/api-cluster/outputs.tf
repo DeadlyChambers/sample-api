@@ -9,3 +9,7 @@ output "ns_name" {
 output "k_service" {
   value = kubernetes_service.api_cluster.spec[0].port[0].node_port
 }
+
+output "k_alb_ip" {
+  value = kubernetes_service.api_cluster.status[0].load_balancer[0].ingress[0].hostname
+}

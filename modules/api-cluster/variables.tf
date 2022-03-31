@@ -32,3 +32,13 @@ variable "replicas" {
 variable "name_space" {
   type = string
 }
+
+variable "service_type" {
+  type    = string
+  default = "NodePort"
+}
+
+variable "port" {
+  type    = number
+  default = 8080
+}

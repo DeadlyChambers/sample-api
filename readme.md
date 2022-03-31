@@ -46,10 +46,13 @@ terraform init
 terraform plan
 terraform apply
 # you will need to type yes
+```
 
 # Test the deployment
+After creating the services you should be able to get the IP:Port
+```
 cd ../..
-./.test-deploy.sh
+./.test-deploy.sh develop
 ```
 
 You should see the output of the version from the module. Now you are safe to
@@ -59,3 +62,8 @@ cd develop/services
 terraform destroy
 minikube delete
 ```
+
+# Create EKS Cluster and Deploy in AWS
+This is walkthrough is using Minikube so everything is happening locally, and it is
+free. To run the same apis in AWS by creating an EKS Cluster and deploying to the cluster
+[See the aws folder](aws/readme.md)

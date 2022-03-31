@@ -85,10 +85,10 @@ resource "kubernetes_service" "api_cluster" {
     selector = {
       msservice = kubernetes_deployment.api_cluster.spec.0.template.0.metadata.0.labels.msservice
     }
-    type = "NodePort"
+    type = var.service_type
     port {
       #node_port   = 31122
-      port        = 8080
+      port        = var.port
       target_port = 80
     }
   }

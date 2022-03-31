@@ -2,9 +2,11 @@
 
 _app_ver=$1
 _app_proj=$2
+_repo=$3
 if [ -z "$_app_ver" ]
     then
-        read -p "Enter Version in the form of 6.0.1.8:\n" _app_ver
+        echo -e "Enter Version in the form of 6.0.1.8" 
+        read -p ": "  _app_ver
 fi
 if [ -z "$_app_proj" ]
     then
@@ -16,9 +18,21 @@ if [ -z "$_app_proj" ]
             esac
         done
 fi
+if [ -z "$_repo" ]
+    then
+        _repo="dockerhub"
+fi
+
+if [ "$_repo" == "dockerhub" ]
+    then
+        _repo="deadlychambers/soinshane-k8s"
+    else
+        aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/w7a3q5r
+        _repo="public.ecr.aws/w7a3q5r4/soinshane/k8s"
+fi
 
 # Build the new images
-docker build -t "deadlychambers/soinshane-k8s-$_app_proj:$_app_ver" -t "deadlychambers/soinshane-k8s-$_app_proj:latest" --build-arg APP_VER="$_app_ver" -f "$_app_proj.Dockerfile" . 
-
+docker build -t "$_repo-$_app_proj:$_app_ver" -t "$_repo-$_app_proj:latest" --build-arg APP_VER="$_app_ver" -f "$_app_proj.Dockerfile" . 
 # push the images
-docker push "deadlychambers/soinshane-k8s-$_app_proj" -a
+docker push "$_repo-$_app_proj" -a
+
