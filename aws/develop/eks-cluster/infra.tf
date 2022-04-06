@@ -104,11 +104,11 @@ module "eks" {
       min_size               = 1
       max_size               = 2
       desired_size           = 1
-      # Remote access cannot be specified with a launch template
-      remote_access = {
-        ec2_ssh_key               = module.aws_key_pair.this.key_name
-        source_security_group_ids = [modeule.aws_security_group.remote_access.id]
-      }
+      #   # Remote access cannot be specified with a launch template
+      #   remote_access = {
+      #     ec2_ssh_key               = module.aws_key_pair.this.key_name
+      #     source_security_group_ids = [modeule.aws_security_group.remote_access.id]
+      #   }
     }
 
     # default_node_group = {
@@ -167,10 +167,11 @@ locals {
       #       - system:bootstrappers
       #       - system:nodes
       #       - system:node-proxier
-      -rolearn = "arn:aws:iam::{{data.aws_caller_identity.current.arn}}:user/{{data.aws_caller_identity.current.arn}}"
-      username = "terraform"
-      groups   = ["system:masters"]
-
+      userRoles = {
+        rolearn  = "arn:aws:iam::{{data.aws_caller_identity.current.arn}}:user/{{data.aws_caller_identity.current.arn}}"
+        username = "terraform"
+        groups   = ["system:masters"]
+      }
       userRoles = {
         rolearn  = "arn:aws:iam::{{AccountId}}:user/terraform-user"
         username = "terraform"
@@ -192,12 +193,12 @@ locals {
         user    = local.context_user
       }
     }]
-    users = [{
-      name = local.context_user
-      user = {
-        token = data.aws_eks_cluster_auth.token
-      }
-    }]
+    # users = [{
+    #   name = local.context_user
+    #   user = {
+    #     token = data.aws_eks_cluster_auth.token
+    #   }
+    # }]
   })
 }
 
