@@ -63,7 +63,17 @@ terraform destroy
 minikube delete
 ```
 
-# Create EKS Cluster and Deploy in AWS
+# Create EKS Cluster and Deploy in AWS using BitBucket
 This is walkthrough is using Minikube so everything is happening locally, and it is
 free. To run the same apis in AWS by creating an EKS Cluster and deploying to the cluster
 [See the aws folder](aws/readme.md)
+
+The initial test is under modules/simple-ec2, where you should be able to
+```
+terraform init
+terraform plan
+terraform apply
+terraform output test_web_server
+terraform output public_connection_string
+terraform destroy
+```
