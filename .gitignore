@@ -6,4 +6,6 @@ obj/
 .terraform
 .terraform/
 *.tfstate
+*.tfstate.backup
+*.lock.hcl
 .creds.sh

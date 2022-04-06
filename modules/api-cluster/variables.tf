@@ -31,6 +31,7 @@ variable "replicas" {
 
 variable "name_space" {
   type = string
+
 }
 
 variable "service_type" {
