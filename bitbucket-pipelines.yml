@@ -16,6 +16,7 @@ pipelines:
         - step:
             name: Test
             script:
+              - cd simple-ec2
               - terraform init
               - terraform validate
         - step:
@@ -37,10 +38,13 @@ pipelines:
             deployment: Production
             trigger: manual
             script:
+              - cd simple-ec2
+              - terraform login
               - terraform init
               - terraform plan
               - terraform apply -auto-approve
               - _ipurl=$(terraform output test_web_server)
               - curl "http://${_ipurl}"
+
 
 
