@@ -2,6 +2,7 @@
 # Cluster
 ################################################################################
 
+
 output "cluster_arn" {
   description = "The Amazon Resource Name (ARN) of the cluster"
   value       = module.eks.cluster_arn
@@ -41,6 +42,7 @@ output "cluster_primary_security_group_id" {
   description = "Cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control-plane-to-data-plane communication. Referred to as 'Cluster security group' in the EKS console"
   value       = module.eks.cluster_primary_security_group_id
 }
+
 
 ################################################################################
 # Security Group
@@ -160,3 +162,9 @@ output "aws_auth_configmap_yaml" {
   value       = module.eks.aws_auth_configmap_yaml
 }
 
+# output "k8s_host" {
+#   host                   = data.aws_eks_cluster.cluster_endpoint
+#   token                  = data.aws_eks_cluster_auth.this.token
+#   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+#   config_context         = data.aws_eks_cluster.cluster_context
+# }

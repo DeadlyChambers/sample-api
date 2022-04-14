@@ -1,11 +1,16 @@
 
 ##About to strip working code into modules. Want to get a quick 
 ##commit in just in case I melt this design
+#https://www.architect.io/blog/2021-02-17/terraform-kubernetes-tutorial/
 
 resource "kubernetes_deployment" "api_cluster" {
   metadata {
     name      = var.current_api
     namespace = var.name_space
+     labels = {
+          msservice = "${var.current_api}"
+          app       = "${var.app_name}"
+        }
   }
   spec {
     replicas = var.replicas
@@ -49,22 +54,22 @@ resource "kubernetes_deployment" "api_cluster" {
           port {
             container_port = 80
           }
-          readiness_probe {
-            http_get {
-              path = "/System"
-              port = 80
-            }
-            initial_delay_seconds = 5
-            timeout_seconds       = 5
-          }
-          liveness_probe {
-            http_get {
-              path = "/System"
-              port = 80
-            }
-            initial_delay_seconds = 5
-            timeout_seconds       = 5
-          }
+          # readiness_probe {
+          #   http_get {
+          #     path = "/System"
+          #     port = 80
+          #   }
+          #   initial_delay_seconds = 5
+          #   timeout_seconds       = 5
+          # }
+          # liveness_probe {
+          #   http_get {
+          #     path = "/System"
+          #     port = 80
+          #   }
+          #   initial_delay_seconds = 5
+          #   timeout_seconds       = 5
+          # }
         }
       }
     }
@@ -76,7 +81,7 @@ resource "kubernetes_service" "api_cluster" {
     name      = var.current_api
     namespace = var.name_space
     labels = {
-      msservice = var.current_api
+      msservice = kubernetes_deployment.api_cluster.spec.0.template.0.metadata.0.labels.msservice
       app       = var.app_name
     }
   }
@@ -87,9 +92,36 @@ resource "kubernetes_service" "api_cluster" {
     }
     type = var.service_type
     port {
-      #node_port   = 31122
+      #node_port   = 31122 or 80
       port        = var.port
       target_port = 80
+    }
+  }
+}
+
+resource "kubernetes_ingress" "ingress" {
+  metadata {
+    labels = {
+      app                               = "ingress-nginx"
+    }
+    name = "${var.current_api}-ingress"
+    namespace = var.name_space 
+    annotations = {
+      "kubernetes.io/ingress.class": "nginx-${var.name_space}"
+    }
+  }
+
+  spec {
+    rule {
+      http {
+        path {
+          path = "/"
+          backend {
+            service_name = var.current_api
+            service_port = 80
+          }
+        }
+      }
     }
   }
 }

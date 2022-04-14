@@ -111,13 +111,13 @@ module "eks" {
         appname   = "sample-app"
       }
 
-      #   taints = {
-      #     dedicated = {
-      #       key    = "dedicated"
-      #       value  = "gpuGroup"
-      #       effect = "NO_SCHEDULE"
-      #     }
-      #   }
+        taints = {
+          dedicated = {
+            key    = "dedicated"
+            value  = "gpuGroup"
+            effect = "NO_SCHEDULE"
+          }
+        }
       tags = {
         imageid = "6.0.0.10"
       }
@@ -157,22 +157,22 @@ module "eks" {
 # Sub-Module Usage on Existing/Separate Cluster
 ################################################################################
 
-# module "eks_managed_node_group" {
-#   source = "../../modules/eks-managed-node-group"
+module "eks_managed_node_group" {
+  source = "../../modules/eks-managed-node-group"
 
-#   name            = "separate-eks-mng"
-#   cluster_name    = module.eks.cluster_id
-#   cluster_version = module.eks.cluster_version
+  name            = "separate-eks-mng"
+  cluster_name    = module.eks.cluster_id
+  cluster_version = module.eks.cluster_version
 
-#   vpc_id                            = module.vpc.vpc_id
-#   subnet_ids                        = module.vpc.private_subnets
-#   cluster_primary_security_group_id = module.eks.cluster_primary_security_group_id
-#   vpc_security_group_ids = [
-#     module.eks.cluster_security_group_id,
-#   ]
+  vpc_id                            = module.vpc.vpc_id
+  subnet_ids                        = module.vpc.private_subnets
+  cluster_primary_security_group_id = module.eks.cluster_primary_security_group_id
+  vpc_security_group_ids = [
+    module.eks.cluster_security_group_id,
+  ]
 
-#   tags = merge(local.tags, { Separate = "eks-managed-node-group" })
-# # }
+  tags = merge(local.tags, { Separate = "eks-managed-node-group" })
+}
 
 data "aws_eks_cluster_auth" "this" {
   name = module.eks.cluster_id
@@ -234,7 +234,7 @@ locals {
 resource "null_resource" "patch" {
   triggers = {
     kubeconfig = base64encode(local.kubeconfig)
-    cmd_patch  = "kubectl patch configmap/aws-auth --patch \"${local.aws_auth_configmap_yaml}\" -n kube-system --kubeconfig <(echo $KUBECONFIG | base64 --decode)"
+    cmd_patch  = "echo running config && kubectl patch configmap/aws-auth --patch \"${local.aws_auth_configmap_yaml}\" -n kube-system --kubeconfig <(echo $KUBECONFIG | base64 --decode)"
   }
 
   provisioner "local-exec" {
@@ -322,7 +322,7 @@ module "vpc_cni_irsa" {
 }
 
 resource "aws_security_group" "additional" {
-  name   = "soin-eks-terra-addl"
+  name   = "${local.name}-additional"
   vpc_id = module.vpc.vpc_id
 
   ingress {

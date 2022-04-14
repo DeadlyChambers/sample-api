@@ -15,14 +15,33 @@ terraform {
   }
 }
 
+variable "auth_token" {
+  description = "The token for context"
+  type = "string"
+}
+
+data "terraform_remote_state" "eks" {
+  backend = "local"
+
+  config = {
+    path = "../eks-cluster"
+  }
+}
+
+
 locals {
-  namespace    = "develop"
-  context_name = "kube-system"
-  context_user = "aws-node"
-  auth_token   = "k8s-aws-v1.jwt.part"
-  hosturl      = "https://your.eks.amazonaws.com"
-  ca_cert_data = "S0tLS0tCg=="
-  cluster_name = "api-cluster"
+  #namespace    = "develop"
+  docker_repo = "deadlychambers"
+  docker_image = "deadlychambers"
+  context_name = "terraform"
+  context_user = "terraform"
+  #May need to pull from 
+  #_token=$(aws eks get-token --cluster-name sample-api --region us-east-2 | jq -r .status.token)
+  #terraform apply -var "auth_token=${_token}" && terraform output
+  auth_token   = var.auth_token
+  hosturl      = data.terraform_remote_state.eks.cluster_endpoint
+  ca_cert_data = data.terraform_remote_state.eks.cluster_certificate_authority_data
+  cluster_name = data.terraform_remote_state.eks.cluster_id
   kubeconfig = yamlencode({
     apiVersion      = "v1"
     kind            = "Config"
@@ -53,8 +72,10 @@ locals {
 
 resource "kubernetes_namespace" "develop" {
   metadata {
+    labels = {
+      app=local.cluster_name
+    }
     name = local.namespace
-  }
 }
 provider "kubernetes" {
   host                   = local.hosturl
@@ -69,8 +90,8 @@ module "system-api" {
   current_api  = "system-api"
   docker_tag   = "6.0.1.11"
   docker_image = "soinshane-k8s-system"
-  docker_repo  = "deadlychambers"
-  app_name     = "sample-app"
+  docker_repo  = local.docker_repo
+  app_name     = local.cluster_name
   service_type = "LoadBalancer"
   port         = 80
   replicas     = 1
@@ -82,8 +103,8 @@ module "data-api" {
   current_api  = "data-api"
   docker_tag   = "6.0.1.10"
   docker_image = "soinshane-k8s-data"
-  docker_repo  = "deadlychambers"
-  app_name     = "sample-app"
+  docker_repo  = local.docker_repo
+  app_name     = local.cluster_name
   service_type = "LoadBalancer"
   port         = 80
   replicas     = 1

@@ -4,7 +4,7 @@ resource "random_string" "suffix" {
   special = false
 }
 locals {
-  name            = "example"
+  name            = "sample-api"
   name_pr         = "${local.name}-${random_string.suffix.result}"
   cluster_name    = local.name
   cluster_version = "1.22"
@@ -26,10 +26,9 @@ module "eks" {
   version                         = "18.17.0"
   cluster_name                    = local.cluster_name
   cluster_version                 = local.cluster_version
-  vpc_id                          = module.vpc.vpc_id
-  subnet_ids                      = module.vpc.private_subnets
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
+  #enabled_cluster_log_types = local.cluster_log_types
 
 
   cluster_ip_family          = "ipv6"
@@ -41,17 +40,18 @@ module "eks" {
     kube-proxy = {}
     vpc-cni = {
       resolve_conflicts = "OVERWRITE"
-      #service_account_role_arn = module.eks.vpc_cni_irsa.iam_role_arn
-
+      service_account_role_arn = module.eks.vpc_cni_irsa.iam_role_arn
     }
   }
   cluster_encryption_config = [{
-    provider_key_arn = "ac01234b-00d9-40f6-ac95-e42345f78b00"
+     provider_key_arn = aws_kms_key.eks.arn
     resources        = ["secrets"]
   }]
 
+  vpc_id                          = module.vpc.vpc_id
+  subnet_ids                      = module.vpc.private_subnets
+ 
 
-  # Extend cluster security group rules
   cluster_security_group_additional_rules = {
     egress_nodes_ephemeral_ports_tcp = {
       description                = "To node 1025-65535"
@@ -63,7 +63,7 @@ module "eks" {
     }
   }
 
-  # Extend node-to-node security group rules
+ # Extend node-to-node security group rules
   node_security_group_additional_rules = {
     ingress_self_all = {
       description = "Node to node all ports/protocols"
@@ -85,65 +85,185 @@ module "eks" {
   }
 
   eks_managed_node_group_defaults = {
-    disk_size        = 2
-    instance_types   = ["t2.nano"]
-    root_volume_type = "gp2"
+    ami_type       = "AL2_x86_64"
+    disk_size      = 50
+    instance_types = ["t2.small"]
 
-    # See https://github.com/aws/containers-roadmap/issues/1666 for more context
-    iam_role_attach_cni_policy = false
+    # We are using the IRSA created below for permissions
+    iam_role_attach_cni_policy = true #true
   }
 
   eks_managed_node_groups = {
+    # Default node group - as provided by AWS EKS
     default_node_group = {
       # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
       # so we need to disable it to use the default template provided by the AWS EKS managed node group service
       create_launch_template = false
       launch_template_name   = ""
-      instance_types         = ["t2.nano"]
-      root_volume_type       = "gp2"
-      min_size               = 1
-      max_size               = 2
-      desired_size           = 1
-      #   # Remote access cannot be specified with a launch template
-      #   remote_access = {
-      #     ec2_ssh_key               = module.aws_key_pair.this.key_name
-      #     source_security_group_ids = [modeule.aws_security_group.remote_access.id]
-      #   }
+
+      # Remote access cannot be specified with a launch template
+      remote_access = {
+        ec2_ssh_key               = aws_key_pair.this.key_name
+        source_security_group_ids = [aws_security_group.remote_access.id]
+      }
+      min_size     = 1
+      max_size     = 2
+      desired_size = 1
+      instance_types = ["t2.nano"]
+      capacity_type        = "SPOT"
+      disk_size            = 256
+      force_update_version = true
+      instance_types       = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
+      labels = {
+        GithubRepo = "sample-api"
+        GithubOrg  = "soinshane"
+      }
+
+      taints = [
+        {
+          key    = "dedicated"
+          value  = "gpuGroup"
+          effect = "NO_SCHEDULE"
+        }
+      ]
+    block_device_mappings = {
+        xvda = {
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_size           = 75
+            volume_type           = "gp3"
+            iops                  = 3000
+            throughput            = 150
+            encrypted             = true
+            kms_key_id            = aws_kms_key.ebs.arn
+            delete_on_termination = true
+          }
+        }
+      }
+       create_iam_role          = true
+      iam_role_name            = "eks-managed-node-group-complete-example"
+      iam_role_use_name_prefix = false
+      iam_role_description     = "EKS managed node group complete example role"
+      iam_role_tags = {
+        Purpose = "Protector of the kubelet"
+      }
+      iam_role_additional_policies = [
+        "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+      ]
+
+      create_security_group          = true
+      security_group_name            = "eks-managed-node-group-complete-example"
+      security_group_use_name_prefix = false
+      security_group_description     = "EKS managed node group complete example security group"
+#      https://github.com/terraform-aws-modules/terraform-aws-eks/blob/9a99689cc13147f4afc426b34ba009875a28614e/examples/eks_managed_node_group/main.tf#L41
+ 
+
+
+
     }
 
-    # default_node_group = {
-    #   # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
-    #   # so we need to disable it to use the default template provided by the AWS EKS managed node group service
-    #   create_launch_template = false
-    #   launch_template_name   = ""
-    #   instance_types         = ["t2.nano"]
-    #   root_volume_type       = "gp2"
-    #   min_size               = 1
-    #   max_size               = 2
-    #   desired_size           = 1
-    #   remote_access = {
-    #     ec2_ssh_key               = aws_key_pair.this.key_name
-    #     source_security_group_ids = [aws_security_group.remote_access.id]
-    #   }
-    # }
+  }
+  tags = local.tags
+  
+  # eks_managed_node_group_defaults = {
+  #   disk_size        = 2
+  #   instance_types   = ["t2.nano"]
+  #   root_volume_type = "gp2"
 
-    data = [{
-      type      = "cluster_encryption_config"
-      name      = "eks-p"
-      resources = ["secrets"]
+  #   # See https://github.com/aws/containers-roadmap/issues/1666 for more context
+  #   iam_role_attach_cni_policy = false
+  # }
 
-    }]
-    # data "aws_eks_cluster" "cluster" {
-    #   name = module.eks.cluster_id
-    # }
+  # eks_managed_node_groups = {
+  #   default_node_group = {
+  #     # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
+  #     # so we need to disable it to use the default template provided by the AWS EKS managed node group service
+  #     create_launch_template = false
+  #     launch_template_name   = ""
+  #     instance_types         = ["t2.nano"]
+  #     root_volume_type       = "gp2"
+  #     min_size               = 1
+  #     max_size               = 2
+  #     desired_size           = 1
+  #     #   # Remote access cannot be specified with a launch template
+  #     #   remote_access = {
+  #     #     ec2_ssh_key               = module.aws_key_pair.this.key_name
+  #     #     source_security_group_ids = [modeule.aws_security_group.remote_access.id]
+  #     #   }
+  #   }
+
+  #   # default_node_group = {
+  #   #   # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
+  #   #   # so we need to disable it to use the default template provided by the AWS EKS managed node group service
+  #   #   create_launch_template = false
+  #   #   launch_template_name   = ""
+  #   #   instance_types         = ["t2.nano"]
+  #   #   root_volume_type       = "gp2"
+  #   #   min_size               = 1
+  #   #   max_size               = 2
+  #   #   desired_size           = 1
+  #   #   remote_access = {
+  #   #     ec2_ssh_key               = aws_key_pair.this.key_name
+  #   #     source_security_group_ids = [aws_security_group.remote_access.id]
+  #   #   }
+  #   # }
+
+  #   data = [{
+  #     type      = "cluster_encryption_config"
+  #     name      = "eks-p"
+  #     resources = ["secrets"]
+
+  #   }]
+  #   # data "aws_eks_cluster" "cluster" {
+  #   #   name = module.eks.cluster_id
+  #   # }
+  # }
+}
+
+module "vpc_cni_irsa" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  role_name             = "vpc_cni"
+  attach_vpc_cni_policy = true
+  vpc_cni_enable_ipv4   = true
+  oidc_providers = {
+    ex = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:aws-node"]
+    }
+  }
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
+}
+module "karpenter_irsa" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  role_name                          = "karpenter_controller"
+  attach_karpenter_controller_policy = true
+  karpenter_controller_cluster_ids        = [module.eks.cluster_id]
+  karpenter_controller_node_iam_role_arns = [
+    module.eks.eks_managed_node_groups["default"].iam_role_arn
+  ]
+  oidc_providers = {
+    ex = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["karpenter:karpenter"]
+    }
+  }
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
   }
 }
 
-# resource "aws_iam_role_policy_attachment" "additional" {
-#   for_each = module.eks.eks_managed_node_groups
+resource "aws_iam_role_policy_attachment" "additional" {
+  for_each = module.eks.eks_managed_node_groups
 
-#   policy_arn = aws_iam_policy.node_additional.arn
-#   role       = each.value.iam_role_name
+  policy_arn = aws_iam_policy.node_additional.arn
+  role       = each.value.iam_role_name
+}
+# data "aws_eks_cluster_auth" "cluster_auth" {
+#   name = module.eks.cluster_id
 # }
 
 data "aws_eks_cluster_auth" "this" {
@@ -152,33 +272,10 @@ data "aws_eks_cluster_auth" "this" {
 }
 
 locals {
-  context_name = "kube-system"
-  context_user = "aws-node"
   kubeconfig = yamlencode({
-    medatapiVersion = "v1"
+    apiVersion      = "v1"
     kind            = "Config"
-    name            = "aws-auth"
-    namespace       = "kube-system"
-    userRoles = {
-
-      # - rolearn: ${module.eks_managed_node_group.iam_role_arn}
-      #     username: system:node:{{EC2PrivateDNSName}}
-      #     groups:
-      #       - system:bootstrappers
-      #       - system:nodes
-      #       - system:node-proxier
-      userRoles = {
-        rolearn  = "arn:aws:iam::{{data.aws_caller_identity.current.arn}}:user/{{data.aws_caller_identity.current.arn}}"
-        username = "terraform"
-        groups   = ["system:masters"]
-      }
-      userRoles = {
-        rolearn  = "arn:aws:iam::{{AccountId}}:user/terraform-user"
-        username = "terraform"
-        groups   = ["system:masters"]
-      }
-    }
-    current-context = local.context_name
+    current-context = "terraform"
     clusters = [{
       name = module.eks.cluster_id
       cluster = {
@@ -187,35 +284,140 @@ locals {
       }
     }]
     contexts = [{
-      name = local.context_name
+      name = "terraform"
       context = {
         cluster = module.eks.cluster_id
-        user    = local.context_user
+        user    = "terraform"
       }
     }]
-    # users = [{
-    #   name = local.context_user
-    #   user = {
-    #     token = data.aws_eks_cluster_auth.token
-    #   }
-    # }]
+    
+    users = [{
+      name = "terraform"
+      user = {
+        token = data.aws_eks_cluster_auth.this.token
+      }
+    }]
+
+    #         # - rolearn: ${module.eks_managed_node_group.iam_role_arn}
+#         #     username: system:node:{{EC2PrivateDNSName}}
+#         #     groups:
+#         #       - system:bootstrappers
+#         #       - system:nodes
+#         #       - system:node-proxier
+#         userRoles = {
+#           rolearn  = "arn:aws:iam::{{data.aws_caller_identity.current.arn}}:user/{{data.aws_caller_identity.current.arn}}"
+#           username = "terraform"
+#           groups   = ["system:masters"]
+#         }
+#         userRoles = {
+#           rolearn  = "arn:aws:iam::{{AccountId}}:user/terraform-user"
+#           username = "terraform"
+#           groups   = ["system:masters"]
+#         }
   })
 }
+
+# locals {
+#   #context_name = "kube-system"
+#   #context_user = "aws-node"
+#   kubeconfig = yamlencode({
+#     medatapiVersion = "v1"
+#     kind            = "Config"
+#     current-context = "terraform"
+#     contexts = [{
+#       name = "terraform"
+#       context = {
+#         cluster = module.eks.cluster_id
+#         user    = "terraform"
+#       }
+#     }]
+#     users = [{
+#       name            = "terraform"
+#       namespace       = "kube-system"
+#       userRoles = {
+
+#         # - rolearn: ${module.eks_managed_node_group.iam_role_arn}
+#         #     username: system:node:{{EC2PrivateDNSName}}
+#         #     groups:
+#         #       - system:bootstrappers
+#         #       - system:nodes
+#         #       - system:node-proxier
+#         userRoles = {
+#           rolearn  = "arn:aws:iam::{{data.aws_caller_identity.current.arn}}:user/{{data.aws_caller_identity.current.arn}}"
+#           username = "terraform"
+#           groups   = ["system:masters"]
+#         }
+#         userRoles = {
+#           rolearn  = "arn:aws:iam::{{AccountId}}:user/terraform-user"
+#           username = "terraform"
+#           groups   = ["system:masters"]
+#         }
+#       }
+#       }]
+#     clusters = [{
+#       name = module.eks.cluster_id
+#       cluster = {
+#         certificate-authority-data = module.eks.cluster_certificate_authority_data
+#         server                     = module.eks.cluster_endpoint
+#       }
+#     }]
+   
+#     # users = [{
+#     #   name = local.context_user
+#     #   user = {
+#     #     token = data.aws_eks_cluster_auth.token
+#     #   }
+#     # }]
+#   })
+# }
+
+# resource "null_resource" "apply" {
+#   triggers = {
+#     kubeconfig = base64encode(local.kubeconfig)
+#     cmd_patch  = <<-EOT
+#       kubectl create configmap aws-auth -n kube-system --kubeconfig <(echo $KUBECONFIG | base64 --decode)
+#       kubectl patch configmap/aws-auth --patch "${module.eks.aws_auth_configmap_yaml}" -n kube-system --kubeconfig <(echo $KUBECONFIG | base64 --decode)
+#     EOT
+#   }
+
+#   provisioner "local-exec" {
+#     interpreter = ["/bin/bash", "-c"]
+#     environment = {
+#       KUBECONFIG = self.triggers.kubeconfig
+#     }
+#     command = self.triggers.cmd_patch
+#   }
+# }
 
 resource "null_resource" "patch" {
   triggers = {
     kubeconfig = base64encode(local.kubeconfig)
-    cmd_patch  = "echo running config && kubectl patch configmap/aws-auth --patch \"${module.eks.aws_auth_configmap_yaml}\" -n kube-system --kubeconfig <(echo $KUBECONFIG | base64 --decode)"
+    cmd_patch  = "kubectl patch configmap/aws-auth --patch \"${module.eks.aws_auth_configmap_yaml}\" -n kube-system --kubeconfig <(echo $KUBECONFIG | base64 --decode)"
   }
 
   provisioner "local-exec" {
     interpreter = ["/bin/bash", "-c"]
     environment = {
-      KUBECONFIG = "$resource.triggers.kubeconfig"
+      KUBECONFIG = self.triggers.kubeconfig
     }
-    command = "$resource.triggers.cmd_patch"
+    command = self.triggers.cmd_patch
   }
 }
+
+# resource "null_resource" "patch" {
+#   triggers = {
+#     kubeconfig = base64encode(local.kubeconfig)
+#     cmd_patch  = "echo running config && kubectl patch configmap/aws-auth --patch \"${module.eks.aws_auth_configmap_yaml}\" -n kube-system --kubeconfig <(echo $KUBECONFIG | base64 --decode)"
+#   }
+
+#   provisioner "local-exec" {
+#     interpreter = ["/bin/bash", "-c"]
+#     environment = {
+#       KUBECONFIG = "$resource.triggers.kubeconfig"
+#     }
+#     command = "$resource.triggers.cmd_patch"
+#   }
+# }
 
 
 module "vpc" {
@@ -278,7 +480,7 @@ module "vpc_cni_irsa" {
 }
 
 resource "aws_security_group" "additional" {
-  name   = "${local.name_pr}-addl"
+  name   = "${local.name}-additional"
   vpc_id = module.vpc.vpc_id
 
   ingress {
@@ -366,6 +568,74 @@ data "aws_iam_policy_document" "ebs" {
   }
 }
 
+##LTBegin
+resource "aws_launch_template" "external" {
+  name_prefix            = "external-eks-ex-"
+  description            = "EKS managed node group external launch template"
+  update_default_version = true
+
+  block_device_mappings {
+    device_name = "/dev/xvda"
+
+    ebs {
+      volume_size           = 100
+      volume_type           = "gp2"
+      delete_on_termination = true
+    }
+  }
+
+  monitoring {
+    enabled = true
+  }
+
+  network_interfaces {
+    associate_public_ip_address = false
+    delete_on_termination       = true
+  }
+
+  # if you want to use a custom AMI
+  # image_id      = var.ami_id
+
+  # If you use a custom AMI, you need to supply via user-data, the bootstrap script as EKS DOESNT merge its managed user-data then
+  # you can add more than the minimum code you see in the template, e.g. install SSM agent, see https://github.com/aws/containers-roadmap/issues/593#issuecomment-577181345
+  # (optionally you can use https://registry.terraform.io/providers/hashicorp/cloudinit/latest/docs/data-sources/cloudinit_config to render the script, example: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/997#issuecomment-705286151)
+  # user_data = base64encode(data.template_file.launch_template_userdata.rendered)
+
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = {
+      Name      = "external_lt"
+      CustomTag = "Instance custom tag"
+    }
+  }
+
+  tag_specifications {
+    resource_type = "volume"
+
+    tags = {
+      CustomTag = "Volume custom tag"
+    }
+  }
+
+  tag_specifications {
+    resource_type = "network-interface"
+
+    tags = {
+      CustomTag = "EKS example"
+    }
+  }
+
+  tags = {
+    CustomTag = "Launch template custom tag"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+##ENDLT
+
 resource "tls_private_key" "this" {
 
   algorithm = "RSA"
@@ -373,14 +643,14 @@ resource "tls_private_key" "this" {
 }
 
 resource "aws_key_pair" "this" {
-  key_name   = local.name_pr
+  key_name   = local.name
   public_key = tls_private_key.this.public_key_openssh
 
   tags = local.tags
 }
 
 resource "aws_security_group" "remote_access" {
-  name        = "${local.name}-rem"
+  name        = "${local.name}-remote-access"
   description = "Allow remote SSH access"
   vpc_id      = module.vpc.vpc_id
 
@@ -404,7 +674,7 @@ resource "aws_security_group" "remote_access" {
 }
 
 resource "aws_iam_policy" "node_additional" {
-  name        = "${local.name_pr}-pol"
+  name        = "${local.name}-additional"
   description = "Example usage of node additional policy"
 
   policy = jsonencode({
@@ -433,15 +703,6 @@ resource "aws_iam_policy" "node_additional" {
 #   }
 # }
 
-output "cluster_context" {
-  description = "Kubernetes Cluster Context"
-  value       = local.context_name
-}
-
-output "cluster_user" {
-  description = "Kubernetes Cluster User"
-  value       = local.context_user
-}
-#instance_refresh_enabled = true
+instance_refresh_enabled = true
 
 
