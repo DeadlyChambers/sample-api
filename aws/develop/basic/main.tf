@@ -28,14 +28,14 @@ data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
 }
 
-data "aws_eks_cluster_auth" "this" {
+data "aws_eks_cluster_auth" "cluster" {
   name = module.eks.cluster_id
 }
 
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
-  token                  = data.aws_eks_cluster_auth.this.token
+  token                  = data.aws_eks_cluster_auth.cluster.token
   load_config_file       = false
 }
 
@@ -71,10 +71,10 @@ version = "~> 3.14"
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "18.17.0"
+  version = "18.19.0"
 
   cluster_name    = "${local.cluster_name}"
-  cluster_version = "1.17"
+  #cluster_version = "1.17"
   subnet_ids = module.vpc.private_subnets
   vpc_id = module.vpc.vpc_id
 
@@ -171,29 +171,23 @@ locals {
     users = [{
       name = "terraform"
       user = {
-        token = data.aws_eks_cluster_auth.this.token
+        token = data.aws_eks_cluster_auth.cluster.token
       }
     }]
   })
   # we have to combine the configmap created by the eks module with the externally created node group/profile sub-modules
   aws_auth_configmap_yaml = <<-EOT
   ${chomp(module.eks.aws_auth_configmap_yaml)}
-      - rolearn: ${module.eks_managed_node_group.iam_role_arn}
+      - rolearn: ${module.eks.eks_managed_node_groups.main.iam_role_arn}
         username: system:node:{{EC2PrivateDNSName}}
         groups:
           - system:bootstrappers
           - system:nodes
-      - rolearn: ${module.self_managed_node_group.iam_role_arn}
+      - rolearn: ${module.eks.eks_managed_node_groups.second.iam_role_arn}
         username: system:node:{{EC2PrivateDNSName}}
         groups:
           - system:bootstrappers
           - system:nodes
-      - rolearn: ${module.fargate_profile.fargate_profile_pod_execution_role_arn}
-        username: system:node:{{SessionName}}
-        groups:
-          - system:bootstrappers
-          - system:nodes
-          - system:node-proxier
       - rolearn: "arn:aws:iam::${data.aws_caller_identity.current.arn}:user/${data.aws_caller_identity.current.arn}"
         username: terraform
         groups:
