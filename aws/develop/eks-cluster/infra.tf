@@ -40,7 +40,7 @@ module "eks" {
     kube-proxy = {}
     vpc-cni = {
       resolve_conflicts = "OVERWRITE"
-      service_account_role_arn = module.eks.vpc_cni_irsa.iam_role_arn
+      service_account_role_arn = module.vpc_cni_irsa.iam_role_arn
     }
   }
   cluster_encryption_config = [{
@@ -85,7 +85,7 @@ module "eks" {
   }
 
   eks_managed_node_group_defaults = {
-    ami_type       = "AL2_x86_64"
+    # ami_type       = "AL2_x86_64"
     disk_size      = 50
     instance_types = ["t2.small"]
 
@@ -93,6 +93,7 @@ module "eks" {
     iam_role_attach_cni_policy = true #true
   }
 
+  #https://github.com/terraform-aws-modules/terraform-aws-eks/blob/9a99689cc13147f4afc426b34ba009875a28614e/examples/eks_managed_node_group/main.tf#L41
   eks_managed_node_groups = {
     # Default node group - as provided by AWS EKS
     default_node_group = {
@@ -109,7 +110,7 @@ module "eks" {
       min_size     = 1
       max_size     = 2
       desired_size = 1
-      instance_types = ["t2.nano"]
+      #instance_types = ["t2.nano"]
       capacity_type        = "SPOT"
       disk_size            = 256
       force_update_version = true
@@ -126,7 +127,7 @@ module "eks" {
           effect = "NO_SCHEDULE"
         }
       ]
-    block_device_mappings = {
+      block_device_mappings = {
         xvda = {
           device_name = "/dev/xvda"
           ebs = {
@@ -140,7 +141,7 @@ module "eks" {
           }
         }
       }
-       create_iam_role          = true
+      create_iam_role          = true
       iam_role_name            = "eks-managed-node-group-complete-example"
       iam_role_use_name_prefix = false
       iam_role_description     = "EKS managed node group complete example role"
@@ -155,16 +156,10 @@ module "eks" {
       security_group_name            = "eks-managed-node-group-complete-example"
       security_group_use_name_prefix = false
       security_group_description     = "EKS managed node group complete example security group"
-#      https://github.com/terraform-aws-modules/terraform-aws-eks/blob/9a99689cc13147f4afc426b34ba009875a28614e/examples/eks_managed_node_group/main.tf#L41
- 
-
-
-
     }
-
   }
   tags = local.tags
-  
+}
   # eks_managed_node_group_defaults = {
   #   disk_size        = 2
   #   instance_types   = ["t2.nano"]
@@ -218,43 +213,43 @@ module "eks" {
   #   #   name = module.eks.cluster_id
   #   # }
   # }
-}
 
-module "vpc_cni_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  role_name             = "vpc_cni"
-  attach_vpc_cni_policy = true
-  vpc_cni_enable_ipv4   = true
-  oidc_providers = {
-    ex = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["kube-system:aws-node"]
-    }
-  }
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
-}
-module "karpenter_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  role_name                          = "karpenter_controller"
-  attach_karpenter_controller_policy = true
-  karpenter_controller_cluster_ids        = [module.eks.cluster_id]
-  karpenter_controller_node_iam_role_arns = [
-    module.eks.eks_managed_node_groups["default"].iam_role_arn
-  ]
-  oidc_providers = {
-    ex = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["karpenter:karpenter"]
-    }
-  }
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
-}
+
+# module "vpc_cni_irsa" {
+#   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+#   role_name             = "vpc_cni"
+#   attach_vpc_cni_policy = true
+#   vpc_cni_enable_ipv4   = true
+#   oidc_providers = {
+#     ex = {
+#       provider_arn               = module.eks.oidc_provider_arn
+#       namespace_service_accounts = ["kube-system:aws-node"]
+#     }
+#   }
+#   tags = {
+#     Environment = "dev"
+#     Terraform   = "true"
+#   }
+# }
+# module "karpenter_irsa" {
+#   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+#   role_name                          = "karpenter_controller"
+#   attach_karpenter_controller_policy = true
+#   karpenter_controller_cluster_id        = module.eks.cluster_id
+#   karpenter_controller_node_iam_role_arns = [
+#     module.eks.eks_managed_node_groups["default_node_group"].iam_role_arn
+#   ]
+#   oidc_providers = {
+#     ex = {
+#       provider_arn               = module.eks.oidc_provider_arn
+#       namespace_service_accounts = ["karpenter:karpenter"]
+#     }
+#   }
+#   tags = {
+#     Environment = "dev"
+#     Terraform   = "true"
+#   }
+# }
 
 resource "aws_iam_role_policy_attachment" "additional" {
   for_each = module.eks.eks_managed_node_groups
@@ -703,6 +698,6 @@ resource "aws_iam_policy" "node_additional" {
 #   }
 # }
 
-instance_refresh_enabled = true
+#instance_refresh_enabled = true
 
 
