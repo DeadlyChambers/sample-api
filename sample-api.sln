@@ -10,6 +10,22 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common", "common\common.csproj", "{A8A88FBE-E3BB-4937-8D0F-BF40969D2398}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution-items", "solution-items", "{9D4E0080-A88E-11EC-9974-9729EED5105B}"
+	ProjectSection(SolutionItems) = preProject
+		data.Dockerfile = data.Dockerfile
+		README.md = README.md
+		system.Dockerfile = system.Dockerfile
+		sample-api.sln = sample-api.sln
+		.gitignore = .gitignore
+		.dockerignore = .dockerignore
+		.docker-run.sh = .docker-run.sh
+		.docker-check.sh = .docker-check.sh
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F69D68D6-8274-42A8-920E-B18B75B8CB78}"
+	ProjectSection(SolutionItems) = preProject
+		tests\simple.cs = tests\simple.cs
+		tests\tests.csproj = tests\tests.csproj
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

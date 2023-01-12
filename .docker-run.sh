@@ -26,13 +26,16 @@ fi
 if [ "$_repo" == "dockerhub" ]
     then
         _repo="deadlychambers/soinshane-k8s"
+    elif [ "$_repo" == "sample-api" ] then;
+        echo "$_repo"
+    fi
     else
         aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/w7a3q5r
         _repo="public.ecr.aws/w7a3q5r4/soinshane/k8s"
 fi
 
 # Build the new images
-docker build -t "$_repo-$_app_proj:$_app_ver" -t "$_repo-$_app_proj:latest" --build-arg APP_VER="$_app_ver" -f "$_app_proj.Dockerfile" . 
+docker build --target final -t "$_repo-$_app_proj:$_app_ver" -t "$_repo-$_app_proj:latest" --build-arg APP_VER="$_app_ver" -f "$_app_proj.Dockerfile" . 
 # push the images
 docker push "$_repo-$_app_proj" -a
 
