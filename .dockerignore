@@ -1,0 +1,17 @@
+bin/
+obj/
+.vscode/
+.git/
+*.sh
+*.sln
+*.yaml
+*.md
+*.Dockerfile
+helm
+k8s
+scripts
+infra
+*.tf
+*.tfvars
+.terraform*
+*.hcl
