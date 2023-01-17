@@ -27,6 +27,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F69D68D6
 		tests\tests.csproj = tests\tests.csproj
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "helm", "helm", "{BA27CFF9-18E9-4CD2-8A1C-2775470D34EC}"
+	ProjectSection(SolutionItems) = preProject
+		helm\system.deployment.yaml = helm\system.deployment.yaml
+		helm\namespace.yaml = helm\namespace.yaml
+		helm\system.service.yaml = helm\system.service.yaml
+		helm\ingress.yaml = helm\ingress.yaml
+		helm\README.md = helm\README.md
+		helm\system.api.yaml = helm\system.api.yaml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

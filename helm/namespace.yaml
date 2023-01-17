@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sample-api
+  annotations:
+    argocd.argoproj.io/sample-api: "-1"
+    app.kubernetes.io/name: sample-api

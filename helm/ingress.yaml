@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sample-api-ingress
+  namespace: sample-api
+  labels:
+    app.kubernetes.io/name: sample-api
+    app.kubernetes.io/component: system
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/name: sample-api
+    ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /system
+            pathType: Prefix
+            backend:
+              service:
+                name: system
+                port:
+                  number: 80

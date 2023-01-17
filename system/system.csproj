@@ -14,7 +14,7 @@
     <Authors>Shane Chambers</Authors>
     <RepositoryUrl>https://github.com/DeadlyChambers/sample-api.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <Description>Simple Application to use Kubernetes, System will output only system data</Description>
+    <Description>Simple Application to use Kubernetes, System will output only system data.</Description>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="log4net" Version="2.0.14" />
