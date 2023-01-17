@@ -24,4 +24,5 @@ Run to update cluster
 ```shell
 m8sctl apply -f namespace.yaml
 m8sctl apply -f system.api.yaml
+m8sctl apply -f ingress.yaml
 ```

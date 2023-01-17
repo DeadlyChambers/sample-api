@@ -1,13 +1,3 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: sample-api
-  annotations:
-    argocd.argoproj.io/sample-api: "-1"
-    app.kubernetes.io/name: sample-api
-    
----
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -34,7 +24,8 @@ spec:
         - name: system
           image: docker.io/deadlychambers/soinshane-k8s-system:1.0.0
           ports:
-            - containerPort: 80
+            - name: http
+              containerPort: 80
           resources:
             requests:
               cpu: 100m
@@ -48,36 +39,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: system-service
+  name: system
   namespace: sample-api
 spec:
   type: ClusterIP
   ports:
     - port: 80
+      targetPort: 80
   selector:
     app: system
-
----
-
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: system-ingress
-  namespace: sample-api
-  labels:
-    app: system-ingress
-  annotations:
-    k8s.io/ingress.class: nginx
-    app.kubernetes.io/name: sample-api
-    ingress.kubernetes.io/rewrite-target: /
-spec:
-  rules:
-    - http:
-        paths:
-          - path: /system
-            pathType: Prefix
-            backend:
-              service:
-                name: system-service
-                port:
-                  number: 80
+    #component: nginx
