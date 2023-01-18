@@ -35,6 +35,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "helm", "helm", "{BA27CFF9-1
 		helm\system.api.yaml = helm\system.api.yaml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "argocd", "argocd", "{80C4733B-89CB-450A-95B3-CF9BC9E625B5}"
+	ProjectSection(SolutionItems) = preProject
+		manifests\sample-api\blueGreen.yaml = manifests\sample-api\blueGreen.yaml
+		manifests\sample-api\README.md = manifests\sample-api\README.md
+		manifests\sample-api\bluegreen-preview-ingress.yaml = manifests\sample-api\bluegreen-preview-ingress.yaml
+		manifests\sample-api\bluegreen-ingress.yaml = manifests\sample-api\bluegreen-ingress.yaml
+		manifests\sample-api\kustomization.yaml = manifests\sample-api\kustomization.yaml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
