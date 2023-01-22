@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1  # Changed from apps/v1
+kind: Rollout                     # Changed from Deployment
+metadata:
+  name: system
+spec:
+  selector:
+    matchLabels:
+      app: system
+  template:
+    metadata:
+      labels:
+        app: system
+    spec:
+      containers:
+        - name: system
+          image: docker.io/deadlychambers/soinshane-k8s-system:1.0.0
+          ports:
+            - containerPort: 8080 #80
+  strategy:
+    canary:                        # Changed from rollingUpdate or recreate
+      steps:
+        - setWeight: 20
+        - pause: {}

@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution-items", "solution-
 		.dockerignore = .dockerignore
 		.docker-run.sh = .docker-run.sh
 		.docker-check.sh = .docker-check.sh
+		Jenkinsfile = Jenkinsfile
+		pipeline_config.groovy = pipeline_config.groovy
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F69D68D6-8274-42A8-920E-B18B75B8CB78}"
@@ -33,6 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "helm", "helm", "{BA27CFF9-1
 		helm\ingress.yaml = helm\ingress.yaml
 		helm\README.md = helm\README.md
 		helm\system.api.yaml = helm\system.api.yaml
+		helm\migrations.yaml = helm\migrations.yaml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "argocd", "argocd", "{80C4733B-89CB-450A-95B3-CF9BC9E625B5}"
