@@ -1,5 +1,5 @@
 # https://hub.docker.com/_/microsoft-dotnet-sdk
-FROM mcr.microsoft.com/dotnet/sdk:6.0.405-jammy AS restore
+FROM mcr.microsoft.com/dotnet/sdk:6.0.405 AS restore
 WORKDIR /source
 COPY . ./
 ARG APP_VER
@@ -20,7 +20,7 @@ RUN dotnet build data/data.csproj -c Release -r linux-x64 --no-restore --self-co
 
 FROM build as publish
 ARG APP_VER
-RUN dotnet publish data/data.csproj -c Release -r linux-x64 -o /app --self-contained false --no-build --no-restore -p:Version="$APP_VER"
+RUN dotnet publish data/data.csproj -c Release -r linux-x64 -o /app --self-contained true --no-build --no-restore -p:Version="$APP_VER"
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/runtime:6.0.13-jammy as deploy

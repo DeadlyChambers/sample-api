@@ -1,0 +1,39 @@
+#apiVersion: argoproj.io/v1alpha1
+#kind: ApplicationSet
+#metadata:
+#  name: sample-api
+#spec:
+#  generators:
+#    - list:
+#        elements:
+#          - appName: system
+#            cluster: https://kubernetes.default.svc
+#  template:
+#    metadata:
+#      name: '{{appName}}-app'
+#    spec:
+#      source:
+#        repoURL: https://bitbucket.org/DeadlyChambers85/dev-argo.git
+#        targetRevision: HEAD
+#        path: sample-api/{{cluster}}/{{appName}}
+#      destination:
+#        server: '{{url}}'
+#        namespace: sample-api
+#        
+#---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sample-api
+  namespace: sample-api
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: sample-api
+    server: {{ .Values.spec.destination.server }}
+  project: default
+  source:
+    path: sample-api
+    repoURL: {{ .Values.spec.source.repoURL }}
+    targetRevision: {{ .Values.spec.source.targetRevision }}

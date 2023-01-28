@@ -1,0 +1,39 @@
+#apiVersion: getambassador.io/v3
+#kind: Mapping
+#metadata:
+#  name: argocd-server-ui
+#  namespace: argocd
+#spec:
+#  host: argocd.r2d2.local
+#  prefix: /
+#  service: argocd-server:443
+#---
+#apiVersion: getambassador.io/v3
+#kind: Mapping
+#metadata:
+#  name: argocd-server-cli
+#  namespace: argocd
+#spec:
+#  # NOTE: the port must be ignored if you have strip_matching_host_port enabled on envoy
+#  host: argocd.r2d2.local:443
+#  prefix: /
+#  service: argocd-server:80
+#  regex_headers:
+#    Content-Type: "^application/grpc.*$"
+#  grpc: true
+
+apiVersion: kustomize.config.k8s.io/v1alpha
+kind: Kustomization
+
+resources:
+  - https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/ha/install.yaml
+  - https://raw.githubusercontent.com/argoproj/argo-rollouts/stable/manifests/install.yaml
+  - https://raw.githubusercontent.com/argoproj/argo-rollouts/stable/manifests/crd/kustomization.yaml
+
+#  - https://github.com/argoproj/argo-rollouts/manifests/crds\?ref\=stable
+#  - https://github.com/argoproj/argo-rollouts/manifests/install.yaml
+#  - https://github.com/argoproj/argo-rollouts/manifests/dashboard-install.yaml
+
+components:
+  - https://github.com/argoproj-labs/argocd-extensions/manifests
+  - https://github.com/argoproj/argo-rollouts/manifests/crds

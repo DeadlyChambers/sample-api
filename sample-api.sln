@@ -12,7 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution-items", "solution-items", "{9D4E0080-A88E-11EC-9974-9729EED5105B}"
 	ProjectSection(SolutionItems) = preProject
 		data.Dockerfile = data.Dockerfile
-		README.md = README.md
+		BUILDME.md = BUILDME.md
 		system.Dockerfile = system.Dockerfile
 		sample-api.sln = sample-api.sln
 		.gitignore = .gitignore
@@ -31,20 +31,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F69D68D6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "helm", "helm", "{BA27CFF9-18E9-4CD2-8A1C-2775470D34EC}"
 	ProjectSection(SolutionItems) = preProject
-		helm\namespace.yaml = helm\namespace.yaml
-		helm\ingress.yaml = helm\ingress.yaml
-		helm\README.md = helm\README.md
-		helm\system.api.yaml = helm\system.api.yaml
-		helm\migrations.yaml = helm\migrations.yaml
+		helm\argocd.yaml = helm\argocd.yaml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "argocd", "argocd", "{80C4733B-89CB-450A-95B3-CF9BC9E625B5}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample-api", "sample-api", "{80C4733B-89CB-450A-95B3-CF9BC9E625B5}"
 	ProjectSection(SolutionItems) = preProject
-		manifests\sample-api\blueGreen.yaml = manifests\sample-api\blueGreen.yaml
 		manifests\sample-api\README.md = manifests\sample-api\README.md
-		manifests\sample-api\bluegreen-preview-ingress.yaml = manifests\sample-api\bluegreen-preview-ingress.yaml
-		manifests\sample-api\bluegreen-ingress.yaml = manifests\sample-api\bluegreen-ingress.yaml
-		manifests\sample-api\kustomization.yaml = manifests\sample-api\kustomization.yaml
 	EndProjectSection
 EndProject
 Global
