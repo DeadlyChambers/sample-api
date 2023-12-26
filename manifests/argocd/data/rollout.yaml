@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1  # Changed from apps/v1
+kind: Rollout                     # Changed from Deployment
+metadata:
+  name: data-app
+  namespace: sample-api
+  labels:
+    app: data-app
+spec:
+  selector:
+    matchLabels:
+      app: data-app
+  replicas: 1
+  revisionHistoryLimit: 3
+  template:
+    metadata:
+      labels:
+        app: data-app
+    spec:
+      containers:
+      - name: data-container
+        image: public.ecr.aws/deadlychambers/sample-api/data:latest
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            memory: "100Mi"
+            cpu: "200m"
+  strategy:
+    canary: # Changed from rollingUpdate or recreate
+      steps:
+        - setWeight: 20
+        - pause: { }

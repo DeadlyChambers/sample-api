@@ -1,6 +1,7 @@
+
 libraries {
     dotnet {
-    gitUrl = "github.org"
+    gitUrl = "bitbucket.org"
     companyName = "DeadlyChambers"
     tagPrefix = "jte-"
     newRelicAppName = "NONE"

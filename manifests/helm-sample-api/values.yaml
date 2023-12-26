@@ -1,6 +1,6 @@
 spec:
   destination:
-    server: http://kubernetes.default.svc
+    server: https://kubernetes.default.svc
   source:
     repoURL: https://bitbucket.org/DeadlyChambers85/dev-argo
     targetRevision: HEAD    
@@ -11,4 +11,3 @@ spec:
     - name: system
       image: public.ecr.aws/deadlychambers/sample-api/data
       version: latest
-      
